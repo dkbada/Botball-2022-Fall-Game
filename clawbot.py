@@ -36,11 +36,11 @@ def stop(s_time):
     move(0, 0, s_time)             
 
 def go_to_black(l_power=50, r_power=50):
-    while(KIPR.analog(TOPH_LEFT) < BLACK or KIPR.analog(TOPH_RIGHT) < BLACK):
+    while KIPR.analog(TOPH_LEFT) < BLACK or KIPR.analog(TOPH_RIGHT) < BLACK:
         move(l_power, r_power)
             
 def go_to_white(l_power=50, r_power=50):
-    while(KIPR.analog(TOPH_LEFT) > BLACK or KIPR.analog(TOPH_RIGHT) > BLACK):
+    while KIPR.analog(TOPH_LEFT) > BLACK or KIPR.analog(TOPH_RIGHT) > BLACK:
         move(l_power, r_power)   
             
 def line_follow(time, sensor=TOPH_LEFT):
@@ -57,23 +57,23 @@ def line_follow(time, sensor=TOPH_LEFT):
             else:
                 move(39, 52)
 
-def hold_on():
-    KIPR.clear_motor_position_counter(3)
-    while KIPR.get_motor_position_counter(3) > -17:        
-        KIPR.motor(ARM_MOTOR, -10)
-    KIPR.off(ARM_MOTOR)
-
-def servo_control(servo_name, end_pos, rate=1):
-    pos = KIPR.get_servo_position(servo_name)
-    print(servo_name, pos, end_pos)
-    if pos > end_pos:
-        for i in range(pos, end_pos, -rate):
-            KIPR.set_servo_position(servo_name, i)
-            KIPR.msleep(rate)
-    else:
-        for i in range(pos, end_pos, rate):
-            KIPR.set_servo_position(servo_name, i)
-            KIPR.msleep(rate)            
+# def hold_on():
+#     KIPR.clear_motor_position_counter(3)
+#     while KIPR.get_motor_position_counter(3) > -17:        
+#         KIPR.motor(ARM_MOTOR, -10)
+#     KIPR.off(ARM_MOTOR)
+# 
+# def servo_control(servo_name, end_pos, rate=1):
+#     pos = KIPR.get_servo_position(servo_name)
+#     print(servo_name, pos, end_pos)
+#     if pos > end_pos:
+#         for i in range(pos, end_pos, -rate):
+#             KIPR.set_servo_position(servo_name, i)
+#             KIPR.msleep(rate)
+#     else:
+#         for i in range(pos, end_pos, rate):
+#             KIPR.set_servo_position(servo_name, i)
+#             KIPR.msleep(rate)            
             
 #back line follow            
 def blf(time, power): 
@@ -92,8 +92,8 @@ def wfl():
     while KIPR.analog(LS) > START/2:
        stop(200)
 
-def claw():
-    servo_control(CLAW_SERVO)
+# def claw():
+#     servo_control(CLAW_SERVO)
 
 
 def main():
