@@ -45,22 +45,22 @@ def go_to_white(l_power=50, r_power=50):
             
 def line_follow(time, sensor=TOPH_LEFT):
     end_time = KIPR.seconds() + time
-    while(KIPR.seconds() < end_time):
-        if(KIPR.analog(sensor) > BLACK):
-            if(sensor == TOPH_LEFT):
+    while KIPR.seconds() < end_time:
+        if KIPR.analog(sensor) > BLACK:
+            if sensor == TOPH_LEFT:
                 move(39, 52)
             else:
                 move(52, 39)
         else:
-            if(sensor == TOPH_LEFT):
+            if sensor == TOPH_LEFT:
                 move(52, 39)
             else:
                 move(39, 52)
 
 def hold_on():
     KIPR.clear_motor_position_counter(3)
-    while(KIPR.get_motor_position_counter(3) > -17):        
-		KIPR.motor(ARM_MOTOR, -10)
+    while KIPR.get_motor_position_counter(3) > -17:        
+        KIPR.motor(ARM_MOTOR, -10)
     KIPR.off(ARM_MOTOR)
 
 def servo_control(servo_name, end_pos, rate=1):
@@ -78,51 +78,37 @@ def servo_control(servo_name, end_pos, rate=1):
 #back line follow            
 def blf(time, power): 
     end_time = KIPR.seconds() + time
-    while(KIPR.seconds() < end_time):
-        if(KIPR.analog(TOPH_BRIGHT) < BACK_BLACK and KIPR.analog(TOPH_BLEFT) < BACK_BLACK):
+    while KIPR.seconds() < end_time:
+        if KIPR.analog(TOPH_BRIGHT) < BACK_BLACK and KIPR.analog(TOPH_BLEFT) < BACK_BLACK:
             move(-power, -power)
-        elif(KIPR.analog(TOPH_BRIGHT) < BACK_BLACK and KIPR.analog(TOPH_BLEFT) > BACK_BLACK):
+        elif KIPR.analog(TOPH_BRIGHT) < BACK_BLACK and KIPR.analog(TOPH_BLEFT) > BACK_BLACK:
             move(int(-power * 0.67), -power)
-        elif(KIPR.analog(TOPH_BRIGHT) > BACK_BLACK and KIPR.analog(TOPH_BLEFT) < BACK_BLACK):
+        elif KIPR.analog(TOPH_BRIGHT) > BACK_BLACK and KIPR.analog(TOPH_BLEFT) < BACK_BLACK:
             move(-power, int(-power * 0.67))      
                 
 #wait for light                
 def wfl():
-    START = KIPR.analog(LS) # Get ambiant light
-    while(KIPR.analog(LS) > START/2):
+    START = KIPR.analog(LS) # Get ambient light
+    while KIPR.analog(LS) > START/2:
        stop(200)
 
 def claw():
-	servo_control(CLAW_SERVO, )
-
-def turn_horizontal():
-	servo_control(TURNING_SERVO, UPSIDE_DOWN)
-
-def turn_vertical():
+    servo_control(CLAW_SERVO)
 
 
-           
-#INITIALIZATION------------------
-def setup():
+def main():
     print("Waiting for start light")
     #arm_setup(-15, 200)
     #KIPR.off(3)        
-    wfl()           
-           
-def main():
+    wfl()  
     #move forward
     move(100, 100, 4000)
     move(100, 80, 1000)
-    
-    
-    #grab cube
-    #take it to small starting box
+
     
 
 # --------------------------------------------------------------
-if __name__== "__main__":
-    sys.stdout = os.fdopen(sys.stdout.fileno(),"w",0)
+if __name__ == "__main__":
+    sys.stdout = os.fdopen(sys.stdout.fileno(), "w", 0)
     setup()
     main()
-
-
