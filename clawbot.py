@@ -19,15 +19,18 @@ BACK_BLACK = 3700
 
 TURNING_SERVO = 1    
 CLAW_SERVO = 0
-LIFT_MOTOR = #
+LIFT_MOTOR = 2
 
 CLAW_CLOSED = 2047
-CLAW_OPEN = 1060    
+CLAW_OPEN = 1100 
+CUBE_GRAB = 1770
 
 HORIZONTAL = 1950
 VERTICAL = 940   
     
 #FUNCTIONS------------------------
+clear_counter = KIPR.clear_motor_position_counter
+
 def move(l_power, r_power, sleep_time=5):
     KIPR.motor(L_MOTOR, l_power)
     KIPR.motor(R_MOTOR, r_power)
@@ -58,29 +61,21 @@ def line_follow(time, sensor=TOPH_LEFT):
             else:
                 move(39, 52)                
             
-def linear_slide(power, sleep_time = 5):
-	KIPR.motor(LIFT_MOTOR, power)
-	KIPR.msleep(sleep_time) 
-    
-    
-# def hold_on():
-#     KIPR.clear_motor_position_counter(3)
-#     while KIPR.get_motor_position_counter(3) > -17:        
-#         KIPR.motor(ARM_MOTOR, -10)
-#     KIPR.off(ARM_MOTOR)
-# 
- def servo_control(servo_name, end_pos, rate=1):
-     pos = KIPR.get_servo_position(servo_name)
-     print(servo_name, pos, end_pos)
-     if pos > end_pos:
-         for i in range(pos, end_pos, -rate):
-             KIPR.set_servo_position(servo_name, i)
-             KIPR.msleep(rate)
-     else:
-         for i in range(pos, end_pos, rate):
-             KIPR.set_servo_position(servo_name, i)
-             KIPR.msleep(rate)            
+def raise_claw():
+    clear_counter(LIFT_MOTOR)
+    while (KIPR.get_motor_position_counter(LIFT_MOTOR) < 2232):
+		KIPR.motor(LIFT_MOTOR, 50)
             
+def lower_claw():
+    clear_counter(LIFT_MOTOR)
+    while (KIPR.get_motor_position_counter(LIFT_MOTOR) > -2232):
+		KIPR.motor(LIFT_MOTOR, -50)
+
+def claw(end_pos):
+     KIPR.set_servo_position(CLAW_SERVO, end_pos)
+     KIPR.msleep(500)
+         
+
 #back line follow            
 def blf(time, power): 
     end_time = KIPR.seconds() + time
@@ -100,27 +95,32 @@ def wfl():
 
 def main():
     print("Waiting for start light")
-    #arm_setup(-15, 200)
-    #KIPR.off(3)        
-    wfl()  
+    wfl()
+	
+    #open claw
+    claw(CLAW_OPEN)
     #turn
-    move(0, -100, 
-    #open claw
-    servo_control(CLAW_SERVO, CLAW_OPEN)
-    #riase claw
-    linear_slide(50, 4000)
+    clear_counter(R_MOTOR)
+    while (KIPR.get_motor_position_counter(R_MOTOR) > -737):
+		move(0, -100)
+    stop(100)
+    #raise claw
+    raise_claw()
+    KIPR.msleep(100)
     #close claw
-    servo_control(CLAW_SERVO, CLAW_CLOSE)
-    #move forward
-    move(100, 100, 3000) 
+    claw(CUBE_GRAB)
+    #turn
+    clear_counter(R_MOTOR)
+    while (KIPR.get_motor_position_counter(R_MOTOR) < -737):
+		move(0, 100)
+    stop(100)
     #lower claw
-    linear_slide(-50, 4000)
+    lower_claw()
     #open claw
-    servo_control(CLAW_SERVO, CLAW_OPEN)
+    claw(CLAW_OPEN)
     #pipe align
-    move(100, 90, 1500)
-    #move back
-    move(-100, -100, 5000)
+    #move(100, 100, 4000)
+            
     
 
     
@@ -131,5 +131,5 @@ def main():
 # --------------------------------------------------------------
 if __name__ == "__main__":
     sys.stdout = os.fdopen(sys.stdout.fileno(), "w", 0)
-    setup()
+    #setup()
     main()
