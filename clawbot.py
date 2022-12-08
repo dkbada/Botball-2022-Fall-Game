@@ -103,8 +103,8 @@ def main():
     #arm_setup(-15, 200)
     #KIPR.off(3)        
     wfl()  
-    #move backward
-    move(-100, -90, 3000)
+    #turn
+    move(0, -100, 
     #open claw
     servo_control(CLAW_SERVO, CLAW_OPEN)
     #riase claw
