@@ -25,8 +25,8 @@ CLAW_CLOSED = 2047
 CLAW_OPEN = 1100 
 CUBE_GRAB = 1770
 
-HORIZONTAL = 1950
-VERTICAL = 940   
+HORIZONTAL = 2047
+VERTICAL = 0 
     
 #FUNCTIONS------------------------
 clear_counter = KIPR.clear_motor_position_counter
@@ -65,17 +65,22 @@ def raise_claw():
     clear_counter(LIFT_MOTOR)
     while (KIPR.get_motor_position_counter(LIFT_MOTOR) < 2232):
 		KIPR.motor(LIFT_MOTOR, 50)
+    KIPR.motor(LIFT_MOTOR, 0)
             
 def lower_claw():
     clear_counter(LIFT_MOTOR)
     while (KIPR.get_motor_position_counter(LIFT_MOTOR) > -2232):
 		KIPR.motor(LIFT_MOTOR, -50)
-
+    KIPR.motor(LIFT_MOTOR, 0)
+            
 def claw(end_pos):
      KIPR.set_servo_position(CLAW_SERVO, end_pos)
      KIPR.msleep(500)
          
-
+def claw_twist(end_pos):
+     KIPR.set_servo_position(TURNING_SERVO, end_pos)
+     KIPR.msleep(500)
+         
 #back line follow            
 def blf(time, power): 
     end_time = KIPR.seconds() + time
@@ -95,13 +100,15 @@ def wfl():
 
 def main():
     print("Waiting for start light")
+    print("Make sure to lower claw")
     wfl()
-	
+    KIPR.enable_servos()
+    claw_twist(HORIZONTAL)
     #open claw
     claw(CLAW_OPEN)
     #turn
     clear_counter(R_MOTOR)
-    while (KIPR.get_motor_position_counter(R_MOTOR) > -737):
+    while (KIPR.get_motor_position_counter(R_MOTOR) > -693):
 		move(0, -100)
     stop(100)
     #raise claw
@@ -110,17 +117,34 @@ def main():
     #close claw
     claw(CUBE_GRAB)
     #turn
-    clear_counter(R_MOTOR)
-    while (KIPR.get_motor_position_counter(R_MOTOR) < -737):
+    while (KIPR.get_motor_position_counter(R_MOTOR) < 880):
 		move(0, 100)
+    stop(100)
+    #open claw
+    claw(CLAW_OPEN)
+    #turn back to position 0
+    while (KIPR.get_motor_position_counter(R_MOTOR) > 0):
+		move(0, -100)
+    stop(100)  
+    #pipe align
+    move(100, 100, 1800)
+    stop(500)
+    #go back
+    move(-100, -100, 6000)
+    #back up
+    move(50, 50, 500)
+    move(0, 50, 900)
+    move(50, 0, 3000)
     stop(100)
     #lower claw
     lower_claw()
-    #open claw
+    #grab cube
+    claw(CUBE_GRAB)
+    #raise claw
+    raise_claw()
+    #for testing
     claw(CLAW_OPEN)
-    #pipe align
-    #move(100, 100, 4000)
-            
+    lower_claw()
     
 
     
