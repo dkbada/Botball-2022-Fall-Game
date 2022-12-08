@@ -111,7 +111,18 @@ def main():
     linear_slide(50, 4000)
     #close claw
     servo_control(CLAW_SERVO, CLAW_CLOSE)
+    #move forward
+    move(100, 100, 3000) 
+    #lower claw
+    linear_slide(-50, 4000)
+    #open claw
+    servo_control(CLAW_SERVO, CLAW_OPEN)
+    #pipe align
+    move(100, 90, 1500)
+    #move back
+    move(-100, -100, 5000)
     
+
     
     
 
