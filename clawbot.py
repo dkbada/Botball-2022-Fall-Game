@@ -62,16 +62,20 @@ def line_follow(time, sensor=TOPH_LEFT):
                 move(39, 52)                
             
 def raise_claw():
-    clear_counter(LIFT_MOTOR)
     while (KIPR.get_motor_position_counter(LIFT_MOTOR) < 2232):
+		KIPR.motor(LIFT_MOTOR, 50)
+    KIPR.motor(LIFT_MOTOR, 0)
+
+def raise_claw_higher():
+    while (KIPR.get_motor_position_counter(LIFT_MOTOR) < 3400):
 		KIPR.motor(LIFT_MOTOR, 50)
     KIPR.motor(LIFT_MOTOR, 0)
             
 def lower_claw():
-    clear_counter(LIFT_MOTOR)
-    while (KIPR.get_motor_position_counter(LIFT_MOTOR) > -2232):
+    while (KIPR.get_digital_value(0) == 0):
 		KIPR.motor(LIFT_MOTOR, -50)
     KIPR.motor(LIFT_MOTOR, 0)
+    clear_counter(LIFT_MOTOR)
             
 def claw(end_pos):
      KIPR.set_servo_position(CLAW_SERVO, end_pos)
@@ -101,11 +105,12 @@ def wfl():
 def main():
     print("Waiting for start light")
     print("Make sure to lower claw")
-    wfl()
     KIPR.enable_servos()
     claw_twist(HORIZONTAL)
+    lower_claw()
     #open claw
     claw(CLAW_OPEN)
+    wfl()
     #turn
     clear_counter(R_MOTOR)
     while (KIPR.get_motor_position_counter(R_MOTOR) > -693):
@@ -116,12 +121,16 @@ def main():
     KIPR.msleep(100)
     #close claw
     claw(CUBE_GRAB)
+    KIPR.msleep(2000)
     #turn
     while (KIPR.get_motor_position_counter(R_MOTOR) < 880):
 		move(0, 100)
     stop(100)
     #open claw
+    lower_claw()
     claw(CLAW_OPEN)
+    #raise claw
+    raise_claw_higher()        
     #turn back to position 0
     while (KIPR.get_motor_position_counter(R_MOTOR) > 0):
 		move(0, -100)
@@ -133,18 +142,24 @@ def main():
     move(-100, -100, 6000)
     #back up
     move(50, 50, 500)
-    move(0, 50, 900)
-    move(50, 0, 3000)
+    move(0, 50, 1170)
+    move(50, 0, 3650)
     stop(100)
-    #lower claw
-    lower_claw()
     #grab cube
-    claw(CUBE_GRAB)
-    #raise claw
-    raise_claw()
-    #for testing
-    claw(CLAW_OPEN)
     lower_claw()
+    KIPR.msleep(500)
+    claw(CUBE_GRAB)
+    raise_claw_higher()
+    #turn then drive forward
+    move(-50, -50, 800)
+    move(0, 50, 2600)
+    move(50, 50, 2000)
+    move(0, 50, 2000)
+    stop(100)
+    #drop cube
+    lower_claw()
+    claw(CLAW_OPEN)
+    
     
 
     
